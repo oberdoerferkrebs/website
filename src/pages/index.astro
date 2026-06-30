@@ -1,0 +1,212 @@
+---
+// Oberdoerfer & Krebs — placeholder landing page.
+// This is intentionally minimal: a confident "coming soon" that reads as
+// intentional, not unfinished. It evolves into the full portfolio later.
+const studio = 'Oberdoerfer & Krebs';
+const tagline = 'Design duo';
+const statement = 'A design practice in the making. Objects, spaces, and ideas — coming soon.';
+const contactEmail = 'hello@oberdoerferkrebs.com';
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{studio} — {tagline}</title>
+    <meta
+      name="description"
+      content="Oberdoerfer & Krebs is a design duo. Portfolio, custom-object configurator, and shop coming soon."
+    />
+    <meta name="theme-color" content="#0a0a0a" />
+
+    <!-- Open Graph: how the link looks when shared -->
+    <meta property="og:title" content={`${studio} — ${tagline}`} />
+    <meta property="og:description" content={statement} />
+    <meta property="og:type" content="website" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+
+  <body>
+    <!-- cursor-aware glow; purely decorative, hidden from assistive tech -->
+    <div class="glow" aria-hidden="true"></div>
+
+    <main class="stage">
+      <div class="content">
+        <p class="eyebrow reveal" style="--i: 0">{tagline}</p>
+        <h1 class="wordmark reveal" style="--i: 1">
+          Oberdoerfer<span class="amp">&amp;</span>Krebs
+        </h1>
+        <p class="statement reveal" style="--i: 2">{statement}</p>
+        <a class="contact reveal" href={`mailto:${contactEmail}`} style="--i: 3">
+          {contactEmail}
+        </a>
+      </div>
+    </main>
+
+    <footer class="footer reveal" style="--i: 4">
+      <span>© {year} {studio}</span>
+    </footer>
+
+    <script>
+      // Move the decorative glow toward the cursor. Skipped entirely for
+      // users who prefer reduced motion or on touch devices.
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const glow = document.querySelector<HTMLElement>('.glow');
+      if (glow && !reduce && window.matchMedia('(pointer: fine)').matches) {
+        window.addEventListener('pointermove', (e) => {
+          glow.style.setProperty('--x', `${e.clientX}px`);
+          glow.style.setProperty('--y', `${e.clientY}px`);
+        });
+      }
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --bg: #0a0a0a;
+    --fg: #f4f1ea;
+    --muted: #8a8780;
+    --accent: #c8a96a;
+    --maxw: 60rem;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+      Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+
+  /* decorative cursor glow */
+  .glow {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 40rem;
+    height: 40rem;
+    pointer-events: none;
+    z-index: 0;
+    transform: translate(-50%, -50%);
+    translate: var(--x, 50vw) var(--y, 30vh);
+    background: radial-gradient(
+      circle,
+      rgba(200, 169, 106, 0.14),
+      transparent 60%
+    );
+    transition: translate 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: translate;
+  }
+
+  .stage {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: grid;
+    place-items: center;
+    padding: clamp(1.5rem, 5vw, 4rem);
+  }
+
+  .content {
+    max-width: var(--maxw);
+    text-align: center;
+  }
+
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.32em;
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .wordmark {
+    font-weight: 600;
+    font-size: clamp(2.4rem, 9vw, 6rem);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+  }
+
+  .wordmark .amp {
+    color: var(--accent);
+    margin: 0 0.12em;
+    font-weight: 300;
+  }
+
+  .statement {
+    margin: 1.75rem auto 0;
+    max-width: 34rem;
+    color: var(--muted);
+    font-size: clamp(1rem, 2.5vw, 1.15rem);
+  }
+
+  .contact {
+    display: inline-block;
+    margin-top: 2.25rem;
+    color: var(--fg);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(244, 241, 234, 0.25);
+    padding-bottom: 2px;
+    transition: border-color 0.25s ease, color 0.25s ease;
+  }
+
+  .contact:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 1.5rem;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  /* staggered fade-in on load */
+  .reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: reveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: calc(var(--i, 0) * 0.12s + 0.1s);
+  }
+
+  @keyframes reveal {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+    .glow {
+      transition: none;
+    }
+  }
+</style>
