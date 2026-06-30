@@ -1,12 +1,46 @@
 ---
-// Oberdoerfer & Krebs — placeholder landing page.
-// This is intentionally minimal: a confident "coming soon" that reads as
-// intentional, not unfinished. It evolves into the full portfolio later.
+// Oberdoerfer & Krebs — single-page site (placeholder content).
+//
+// NOTE ON COPY: the text below is DRAFT placeholder, informed by public
+// write-ups of the studio's work (large-scale 3D printing that is
+// interrupted, redirected and hand-finished; pieces like Bend Chair,
+// Bend Stool, UpsideDown, Human Layers). It is here to make the site feel
+// real while we wait for final wording — every line is meant to be edited.
 const studio = 'Oberdoerfer & Krebs';
-const tagline = 'Design duo';
-const statement = 'A design practice in the making. Objects, spaces, and ideas — coming soon.';
+const tagline = 'Design duo · Copenhagen';
 const contactEmail = 'hello@oberdoerferkrebs.com';
 const year = new Date().getFullYear();
+
+const nav = [
+  { href: '#work', label: 'Work' },
+  { href: '#about', label: 'About' },
+  { href: '#shop', label: 'Shop' },
+  { href: '#contact', label: 'Contact' },
+];
+
+// Draft "selected work" — replace with real pieces, descriptions and images.
+const works = [
+  {
+    title: 'Bend Chair',
+    meta: '3D-printed seating · 2025',
+    note: 'Printed with pre-programmed bend zones, then reheated and bent into shape by hand.',
+  },
+  {
+    title: 'Bend Stool',
+    meta: '3D-printed seating · 2025',
+    note: 'A companion to the Bend Chair, finished between programmed geometry and manual force.',
+  },
+  {
+    title: 'UpsideDown',
+    meta: 'Wall rack · 2024',
+    note: 'The printer is sent off-path mid-print; sagging plastic cools into functional hooks.',
+  },
+  {
+    title: 'Human Layers',
+    meta: 'Vessel · Biennale for Craft & Design',
+    note: 'Timed manual colour changes in pellet extrusion, drawing on the logic of ikat dyeing.',
+  },
+];
 ---
 
 <!doctype html>
@@ -15,45 +49,151 @@ const year = new Date().getFullYear();
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
-    <title>{studio} — {tagline}</title>
+    <title>{studio} — Design duo</title>
     <meta
       name="description"
-      content="Oberdoerfer & Krebs is a design duo. Portfolio, custom-object configurator, and shop coming soon."
+      content="Oberdoerfer & Krebs is a design duo working with large-scale 3D printing — interrupted, redirected and finished by hand. Work, shop and contact."
     />
     <meta name="theme-color" content="#0a0a0a" />
-
-    <!-- Open Graph: how the link looks when shared -->
-    <meta property="og:title" content={`${studio} — ${tagline}`} />
-    <meta property="og:description" content={statement} />
+    <meta property="og:title" content={`${studio} — Design duo`} />
+    <meta
+      property="og:description"
+      content="A design duo working with large-scale 3D printing, finished by hand."
+    />
     <meta property="og:type" content="website" />
-
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </head>
 
   <body>
-    <!-- cursor-aware glow; purely decorative, hidden from assistive tech -->
     <div class="glow" aria-hidden="true"></div>
 
-    <main class="stage">
-      <div class="content">
-        <p class="eyebrow reveal" style="--i: 0">{tagline}</p>
-        <h1 class="wordmark reveal" style="--i: 1">
-          Oberdoerfer<span class="amp">&amp;</span>Krebs
-        </h1>
-        <p class="statement reveal" style="--i: 2">{statement}</p>
-        <a class="contact reveal" href={`mailto:${contactEmail}`} style="--i: 3">
-          {contactEmail}
-        </a>
-      </div>
+    <header class="site-header">
+      <a class="brand" href="#top">
+        Oberdoerfer<span class="amp">&amp;</span>Krebs
+      </a>
+      <nav class="nav" aria-label="Primary">
+        {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+      </nav>
+    </header>
+
+    <main id="top">
+      <!-- HERO -->
+      <section class="hero">
+        <div class="hero-inner">
+          <p class="eyebrow reveal" style="--i: 0">{tagline}</p>
+          <h1 class="wordmark reveal" style="--i: 1">
+            Oberdoerfer<span class="amp">&amp;</span>Krebs
+          </h1>
+          <p class="lead reveal" style="--i: 2">
+            We treat large-scale 3D printing as a material to be interrupted,
+            redirected and finished by hand — furniture and objects held
+            between programmed geometry and manual craft.
+          </p>
+          <a class="cta reveal" href="#work" style="--i: 3">See the work ↓</a>
+        </div>
+      </section>
+
+      <!-- WORK -->
+      <section id="work" class="section">
+        <div class="section-head">
+          <span class="kicker">01 — Work</span>
+          <h2>Selected work</h2>
+          <p class="section-intro">
+            A practice built on digital fabrication and hand finishing. Project
+            images and full case studies are on the way — here's where they'll
+            live.
+          </p>
+        </div>
+        <ul class="work-grid">
+          {
+            works.map((w) => (
+              <li class="work-card">
+                <div class="work-thumb" aria-hidden="true">
+                  <span>Image coming soon</span>
+                </div>
+                <h3>{w.title}</h3>
+                <p class="work-meta">{w.meta}</p>
+                <p class="work-note">{w.note}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <!-- ABOUT -->
+      <section id="about" class="section section--narrow">
+        <div class="section-head">
+          <span class="kicker">02 — About</span>
+          <h2>About the studio</h2>
+        </div>
+        <div class="prose">
+          <p>
+            Oberdoerfer &amp; Krebs is a design duo working at the edge of
+            large-scale additive manufacturing. Rather than treating the 3D
+            printer as a machine that simply executes a finished file, we
+            interrupt and redirect the process — bending, sagging and
+            reheating prints so each object carries the trace of both code and
+            hand.
+          </p>
+          <p>
+            The result sits between industrial production and craft: repeatable
+            enough to be a method, open enough that no two pieces are quite the
+            same. We work across seating, vessels and objects for the home.
+          </p>
+          <p class="placeholder-tag">
+            Placeholder bio — tell me how you'd like to describe the studio and
+            I'll rewrite this.
+          </p>
+        </div>
+      </section>
+
+      <!-- SHOP -->
+      <section id="shop" class="section section--narrow">
+        <div class="section-head">
+          <span class="kicker">03 — Shop</span>
+          <h2>Shop</h2>
+        </div>
+        <div class="prose">
+          <p>
+            A small shop for editions and one-off objects is in the works. When
+            it opens you'll be able to browse and buy pieces directly here.
+          </p>
+          <p>
+            Want first word when it launches, or interested in a commission?
+            <a href="#contact">Get in touch.</a>
+          </p>
+          <p class="placeholder-tag">
+            Placeholder — the real shop (cart &amp; checkout) gets added in a
+            later phase.
+          </p>
+        </div>
+      </section>
+
+      <!-- CONTACT -->
+      <section id="contact" class="section section--narrow">
+        <div class="section-head">
+          <span class="kicker">04 — Contact</span>
+          <h2>Contact</h2>
+        </div>
+        <div class="prose">
+          <p>
+            For commissions, exhibitions, press or just to say hello —
+            <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.
+          </p>
+          <p class="placeholder-tag">
+            Placeholder email &amp; social links — send me the real ones and
+            I'll wire them in.
+          </p>
+        </div>
+      </section>
     </main>
 
-    <footer class="footer reveal" style="--i: 4">
+    <footer class="footer">
       <span>© {year} {studio}</span>
+      <span>Copenhagen</span>
     </footer>
 
     <script>
-      // Move the decorative glow toward the cursor. Skipped entirely for
-      // users who prefer reduced motion or on touch devices.
       const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const glow = document.querySelector<HTMLElement>('.glow');
       if (glow && !reduce && window.matchMedia('(pointer: fine)').matches) {
@@ -69,10 +209,12 @@ const year = new Date().getFullYear();
 <style is:global>
   :root {
     --bg: #0a0a0a;
+    --bg-soft: #111110;
     --fg: #f4f1ea;
     --muted: #8a8780;
+    --line: rgba(244, 241, 234, 0.12);
     --accent: #c8a96a;
-    --maxw: 60rem;
+    --maxw: 72rem;
   }
 
   * {
@@ -82,20 +224,28 @@ const year = new Date().getFullYear();
   }
 
   html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem; /* offset for the sticky header */
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
 
   body {
-    min-height: 100dvh;
-    display: flex;
-    flex-direction: column;
     background: var(--bg);
     color: var(--fg);
     font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
       Helvetica, Arial, sans-serif;
-    line-height: 1.5;
+    line-height: 1.6;
     overflow-x: hidden;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  .amp {
+    color: var(--accent);
+    font-weight: 300;
   }
 
   /* decorative cursor glow */
@@ -108,34 +258,69 @@ const year = new Date().getFullYear();
     pointer-events: none;
     z-index: 0;
     transform: translate(-50%, -50%);
-    translate: var(--x, 50vw) var(--y, 30vh);
-    background: radial-gradient(
-      circle,
-      rgba(200, 169, 106, 0.14),
-      transparent 60%
-    );
+    translate: var(--x, 70vw) var(--y, 20vh);
+    background: radial-gradient(circle, rgba(200, 169, 106, 0.12), transparent 60%);
     transition: translate 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: translate;
   }
 
-  .stage {
-    position: relative;
-    z-index: 1;
-    flex: 1;
-    display: grid;
-    place-items: center;
-    padding: clamp(1.5rem, 5vw, 4rem);
+  /* ---------- header / nav ---------- */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem clamp(1.25rem, 5vw, 3rem);
+    background: rgba(10, 10, 10, 0.72);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
   }
 
-  .content {
-    max-width: var(--maxw);
+  .brand {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    font-size: 1rem;
+  }
+  .brand .amp {
+    margin: 0 0.15em;
+  }
+
+  .nav {
+    display: flex;
+    gap: clamp(1rem, 3vw, 2rem);
+  }
+  .nav a {
+    text-decoration: none;
+    font-size: 0.9rem;
+    color: var(--muted);
+    transition: color 0.2s ease;
+  }
+  .nav a:hover {
+    color: var(--fg);
+  }
+
+  /* ---------- hero ---------- */
+  .hero {
+    position: relative;
+    z-index: 1;
+    min-height: calc(100dvh - 4rem);
+    display: grid;
+    place-items: center;
+    padding: clamp(2rem, 6vw, 5rem);
     text-align: center;
+  }
+  .hero-inner {
+    max-width: 50rem;
   }
 
   .eyebrow {
     text-transform: uppercase;
-    letter-spacing: 0.32em;
-    font-size: 0.78rem;
+    letter-spacing: 0.3em;
+    font-size: 0.75rem;
     color: var(--muted);
     margin-bottom: 1.5rem;
   }
@@ -146,52 +331,145 @@ const year = new Date().getFullYear();
     line-height: 1.02;
     letter-spacing: -0.02em;
   }
-
   .wordmark .amp {
-    color: #e0202c; /* test change: red ampersand */
     margin: 0 0.12em;
-    font-weight: 300;
   }
 
-  .statement {
+  .lead {
     margin: 1.75rem auto 0;
-    max-width: 34rem;
+    max-width: 40rem;
     color: var(--muted);
-    font-size: clamp(1rem, 2.5vw, 1.15rem);
+    font-size: clamp(1.02rem, 2.2vw, 1.2rem);
   }
 
-  .contact {
+  .cta {
     display: inline-block;
     margin-top: 2.25rem;
-    color: var(--fg);
     text-decoration: none;
     border-bottom: 1px solid rgba(244, 241, 234, 0.25);
     padding-bottom: 2px;
-    transition: border-color 0.25s ease, color 0.25s ease;
+    transition: color 0.25s ease, border-color 0.25s ease;
   }
-
-  .contact:hover {
+  .cta:hover {
     color: var(--accent);
     border-color: var(--accent);
   }
 
-  .footer {
+  /* ---------- sections ---------- */
+  .section {
     position: relative;
     z-index: 1;
-    text-align: center;
-    padding: 1.5rem;
-    font-size: 0.75rem;
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: clamp(3.5rem, 9vw, 7rem) clamp(1.25rem, 5vw, 3rem);
+    border-top: 1px solid var(--line);
+  }
+  .section--narrow {
+    max-width: 48rem;
+  }
+
+  .section-head {
+    margin-bottom: 2.5rem;
+  }
+  .kicker {
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-size: 0.72rem;
+    color: var(--accent);
+    margin-bottom: 0.9rem;
+  }
+  .section-head h2 {
+    font-size: clamp(1.6rem, 4vw, 2.6rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .section-intro {
+    margin-top: 1rem;
+    max-width: 40rem;
     color: var(--muted);
   }
 
-  /* staggered fade-in on load */
+  /* ---------- work grid ---------- */
+  .work-grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: clamp(1.25rem, 3vw, 2rem);
+  }
+  .work-card h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+  .work-thumb {
+    aspect-ratio: 4 / 3;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--bg-soft);
+    display: grid;
+    place-items: center;
+    margin-bottom: 1rem;
+    color: var(--muted);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+  }
+  .work-meta {
+    color: var(--accent);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0.35rem 0 0.6rem;
+  }
+  .work-note {
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+
+  /* ---------- prose ---------- */
+  .prose p {
+    margin-bottom: 1.1rem;
+    max-width: 42rem;
+  }
+  .prose p:last-child {
+    margin-bottom: 0;
+  }
+  .prose a {
+    color: var(--fg);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--accent);
+  }
+  .placeholder-tag {
+    margin-top: 1.5rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    border-left: 2px solid var(--accent);
+    padding-left: 0.75rem;
+    font-style: italic;
+  }
+
+  /* ---------- footer ---------- */
+  .footer {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 2rem clamp(1.25rem, 5vw, 3rem);
+    border-top: 1px solid var(--line);
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  /* ---------- motion ---------- */
   .reveal {
     opacity: 0;
     transform: translateY(12px);
     animation: reveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     animation-delay: calc(var(--i, 0) * 0.12s + 0.1s);
   }
-
   @keyframes reveal {
     to {
       opacity: 1;
@@ -200,6 +478,9 @@ const year = new Date().getFullYear();
   }
 
   @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
     .reveal {
       animation: none;
       opacity: 1;
@@ -207,6 +488,16 @@ const year = new Date().getFullYear();
     }
     .glow {
       transition: none;
+    }
+  }
+
+  @media (max-width: 36rem) {
+    .nav {
+      gap: 1rem;
+    }
+    .footer {
+      flex-direction: column;
+      gap: 0.4rem;
     }
   }
 </style>
