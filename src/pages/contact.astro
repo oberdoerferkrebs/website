@@ -1,0 +1,21 @@
+---
+// Contact: the label/value list alone, centered on the page.
+import Base from '../layouts/Base.astro';
+import ContactList from '../components/ContactList.astro';
+---
+
+<Base title="Contact — Oberdoerfer&Krebs">
+  <h1 class="sr-only">Contact</h1>
+  <main>
+    <ContactList />
+  </main>
+</Base>
+
+<style>
+  main {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 6rem 1.5rem 4rem;
+  }
+</style>

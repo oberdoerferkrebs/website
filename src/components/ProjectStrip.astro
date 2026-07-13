@@ -1,0 +1,183 @@
+---
+// Home-page project strip.
+//
+// Each item is a fixed-height column: a 300px frame slot (the grown-frame
+// height) plus a permanently reserved caption block, so hovering NEVER
+// shifts any surrounding layout. At rest the frame is a 250×90 letterbox
+// sliver showing thumbDetail. On hover the frame's height animates
+// 90px → 300px — the bottom edge stays static and the image is revealed
+// upward — while thumbDetail crossfades to thumbFull and the caption fades
+// in. This hover choreography is the ONLY animation on the site.
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  projects: CollectionEntry<'projects'>[];
+}
+
+const { projects } = Astro.props;
+---
+
+<ul class="strip">
+  {
+    projects.map((p) => (
+      <li class="item">
+        <a href={`/work/${p.data.slug}`}>
+          <div class="frame-slot">
+            <div class="frame">
+              {p.data.thumbDetail ? (
+                <img
+                  class="ph detail"
+                  src={p.data.thumbDetail}
+                  alt={`${p.data.title} — detail`}
+                  loading="lazy"
+                />
+              ) : (
+                <div class="ph detail placeholder" aria-hidden="true" />
+              )}
+              {p.data.thumbFull ? (
+                <img
+                  class="ph full"
+                  src={p.data.thumbFull}
+                  alt={p.data.title}
+                  loading="lazy"
+                  style={`object-position: ${p.data.focalX}% ${p.data.focalY}%;`}
+                />
+              ) : (
+                <div class="ph full placeholder placeholder--alt" aria-hidden="true" />
+              )}
+            </div>
+          </div>
+          <div class="caption">
+            <p class="cap-title">
+              {p.data.title}, {p.data.year}
+            </p>
+            <p class="cap-text">{p.data.shortText}</p>
+          </div>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .strip {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    padding: 0 1.5rem;
+  }
+
+  .item a {
+    display: block;
+    width: 250px;
+    text-decoration: none;
+  }
+
+  /* fixed-height slot = grown frame height; frame pinned to its bottom */
+  .frame-slot {
+    position: relative;
+    height: 300px;
+  }
+
+  .frame {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 250px;
+    height: 90px;
+    overflow: hidden;
+    transition: height 0.45s cubic-bezier(0.25, 1, 0.4, 1);
+  }
+
+  /* both layers sit at the frame's bottom edge at full grown height,
+     so growing the frame reveals them upward without any movement */
+  .ph {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 250px;
+    height: 300px;
+    object-fit: cover;
+    object-position: bottom;
+    transition: opacity 0.45s ease;
+  }
+
+  .placeholder {
+    background: var(--color-placeholder);
+  }
+  .placeholder--alt {
+    background: var(--color-placeholder-alt);
+  }
+
+  .full {
+    opacity: 0;
+  }
+
+  /* caption space is reserved permanently; only opacity changes */
+  .caption {
+    height: 7.5rem;
+    overflow: hidden;
+    padding-top: 0.8rem;
+    opacity: 0;
+    transition: opacity 0.45s ease;
+  }
+
+  .cap-title {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--color-fg);
+  }
+
+  .cap-text {
+    margin-top: 0.25rem;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: var(--color-muted);
+  }
+
+  @media (hover: hover) {
+    .item a:hover .frame,
+    .item a:focus-visible .frame {
+      height: 300px;
+    }
+    .item a:hover .detail,
+    .item a:focus-visible .detail {
+      opacity: 0;
+    }
+    .item a:hover .full,
+    .item a:focus-visible .full {
+      opacity: 1;
+    }
+    .item a:hover .caption,
+    .item a:focus-visible .caption {
+      opacity: 1;
+    }
+  }
+
+  /* mobile: stacked, fixed 200px frames, no growth, captions visible */
+  @media (max-width: 48rem) {
+    .strip {
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+    }
+    .frame-slot {
+      height: 200px;
+    }
+    .frame {
+      height: 200px;
+    }
+    .ph {
+      height: 200px;
+    }
+    .full {
+      opacity: 0;
+    }
+    .caption {
+      opacity: 1;
+      height: auto;
+      min-height: 5rem;
+    }
+  }
+</style>

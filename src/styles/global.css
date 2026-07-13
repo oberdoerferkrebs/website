@@ -1,0 +1,69 @@
+/* Oberdoerfer&Krebs — global styles.
+   The typeface is a stand-in (Archivo / Archivo Black) and will be swapped
+   later: all font-family definitions live in the two custom properties
+   below, so the swap is one edit. */
+
+:root {
+  --font-display: 'Archivo Black', 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+
+  --color-bg: #ffffff;
+  --color-fg: #111111;
+  --color-muted: #555555;
+  --color-placeholder: #eaeaea;
+  --color-placeholder-alt: #e0e0e0;
+
+  --step-gap: 6vh; /* uniform vertical rhythm on the home page */
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+a {
+  color: inherit;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+/* screen-reader-only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Motion policy: the only animated thing on the site is the project-strip
+   hover choreography. Under prefers-reduced-motion even that is disabled. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
