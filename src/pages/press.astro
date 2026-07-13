@@ -1,0 +1,79 @@
+---
+// Press: selected press list + press-kit download slot (zip not built
+// yet — the link is a placeholder).
+import Base from '../layouts/Base.astro';
+
+const press = [
+  { outlet: 'designboom', year: 2026, url: '#' }, // link placeholder
+  { outlet: 'VoxelMatters', year: 2026, url: '#' }, // link placeholder
+];
+---
+
+<Base title="Press — Oberdoerfer&Krebs">
+  <h1 class="sr-only">Press</h1>
+  <main>
+    <section>
+      <h2>Selected press</h2>
+      <ul>
+        {
+          press.map((p) => (
+            <li>
+              <a href={p.url}>{p.outlet}</a>, {p.year}
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section>
+      <h2>Press kit</h2>
+      <ul>
+        <li>
+          <!-- slot: replace href with the real zip when it exists -->
+          <a href="#">Download press kit (zip)</a>
+        </li>
+      </ul>
+    </section>
+  </main>
+</Base>
+
+<style>
+  main {
+    padding: 8rem 1.5rem 4rem;
+    max-width: 46rem;
+    margin: 0 auto;
+  }
+
+  section + section {
+    margin-top: 3rem;
+  }
+
+  h2 {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin-bottom: 0.9rem;
+  }
+
+  ul {
+    list-style: none;
+  }
+
+  li {
+    font-size: 0.9rem;
+  }
+
+  li + li {
+    margin-top: 0.35rem;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--color-muted);
+  }
+</style>

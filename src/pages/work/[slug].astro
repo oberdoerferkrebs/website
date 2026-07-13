@@ -1,0 +1,134 @@
+---
+// Project page: hero image, body (draft placeholder for now — final
+// structure: problem/observation, then technique + material, then
+// meaning), specs, gallery, and a quiet Instagram process link if one
+// exists.
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import SpecsBlock from '../../components/SpecsBlock.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((p) => ({
+    params: { slug: p.data.slug },
+    props: { project: p },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const d = project.data;
+const heroImage = d.images[0] ?? d.thumbFull;
+---
+
+<Base title={`${d.title} — Oberdoerfer&Krebs`}>
+  <main>
+    <article>
+      <header class="head">
+        <h1>{d.title}</h1>
+      </header>
+
+      {
+        heroImage ? (
+          <img class="hero-img" src={heroImage} alt={d.title} />
+        ) : (
+          <div class="hero-img placeholder" aria-hidden="true" />
+        )
+      }
+
+      <div class="body">
+        <Content />
+      </div>
+
+      <div class="specs-wrap">
+        <SpecsBlock
+          materials={d.materials}
+          dimensions={d.dimensions}
+          year={d.year}
+          exhibition={d.exhibition}
+        />
+      </div>
+
+      {
+        d.images.length > 1 && (
+          <ul class="gallery">
+            {d.images.slice(1).map((src, i) => (
+              <li>
+                <img src={src} alt={`${d.title} — image ${i + 2}`} loading="lazy" />
+              </li>
+            ))}
+          </ul>
+        )
+      }
+
+      {
+        d.instagramUrl && (
+          <p class="process-link">
+            <a href={d.instagramUrl} rel="noopener">Process → Instagram</a>
+          </p>
+        )
+      }
+    </article>
+  </main>
+</Base>
+
+<style>
+  main {
+    padding: 7rem 1.5rem 4rem;
+    max-width: 46rem;
+    margin: 0 auto;
+  }
+
+  .head h1 {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 900;
+    margin-bottom: 1.75rem;
+  }
+
+  .hero-img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+
+  .placeholder {
+    background: var(--color-placeholder);
+  }
+
+  .body {
+    margin: 2.25rem 0;
+    font-size: 0.95rem;
+    color: var(--color-fg);
+    max-width: 36rem;
+  }
+
+  .specs-wrap {
+    margin: 2.25rem 0;
+  }
+
+  .gallery {
+    list-style: none;
+    display: grid;
+    gap: 1.5rem;
+    margin: 2.25rem 0;
+  }
+
+  .gallery img {
+    width: 100%;
+  }
+
+  .process-link {
+    margin-top: 2.5rem;
+    font-size: 0.85rem;
+  }
+
+  .process-link a {
+    color: var(--color-muted);
+    text-decoration: none;
+  }
+
+  .process-link a:hover {
+    color: var(--color-fg);
+  }
+</style>

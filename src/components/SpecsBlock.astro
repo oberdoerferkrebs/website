@@ -1,0 +1,56 @@
+---
+// Label/value specs for a project page. Rows with empty values are
+// omitted (never invent data).
+interface Props {
+  materials: string;
+  dimensions: string;
+  year: number;
+  exhibition: string;
+}
+
+const { materials, dimensions, year, exhibition } = Astro.props;
+
+const rows = [
+  { label: 'Materials', value: materials },
+  { label: 'Dimensions', value: dimensions },
+  { label: 'Year', value: String(year) },
+  { label: 'Exhibited', value: exhibition },
+].filter((r) => r.value.trim() !== '');
+---
+
+<dl class="specs">
+  {
+    rows.map((r) => (
+      <div class="row">
+        <dt>{r.label}</dt>
+        <dd>{r.value}</dd>
+      </div>
+    ))
+  }
+</dl>
+
+<style>
+  .specs {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    gap: 1rem;
+  }
+
+  dt {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    padding-top: 0.15em;
+  }
+
+  dd {
+    font-size: 0.9rem;
+  }
+</style>
