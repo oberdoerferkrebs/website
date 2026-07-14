@@ -13,9 +13,8 @@ const projects = defineCollection({
     materials: z.string(),
     dimensions: z.string(),
     exhibition: z.string(),
-    thumbDetail: z.string().optional(), // tight textural crop: strip rest state
+    thumbDetail: z.string().optional(), // tight textural crop: strip rest state + O&K monogram fill
     thumbFull: z.string().optional(), // full piece with air: strip hover reveal
-    fillImage: z.string().optional(), // edge-to-edge texture for the O&K monogram fill (falls back to thumbDetail)
     focalX: z.number().min(0).max(100).default(50),
     focalY: z.number().min(0).max(100).default(50),
     images: z.array(z.string()).default([]),
