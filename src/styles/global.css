@@ -46,6 +46,8 @@ html.has-photo .photo-text {
   background-size: 92vw auto;
   -webkit-background-clip: text;
   background-clip: text;
+  /* punch up the picture so it reads strongly inside the letters */
+  filter: contrast(1.35) saturate(1.3);
 }
 
 html {

@@ -101,7 +101,10 @@ const heroPool = projects
     const update = () => {
       ticking = false;
       const big = Math.min(vw * 0.34, 340); // starting O&K size
-      const p = clamp01(window.scrollY / (vh * 0.85));
+      // hold the big O&K for the first stretch, then morph quickly
+      const startAt = vh * 0.5;
+      const distance = vh * 0.4;
+      const p = clamp01((window.scrollY - startAt) / distance);
 
       // overall shrink, and the fills growing out of the anchors
       mark.style.fontSize = big + (SMALL - big) * p + 'px';
@@ -169,7 +172,9 @@ const heroPool = projects
     height: 6rem; /* clears the fixed header in the static fallback */
   }
   :global(html.hero-anim) .hero-spacer {
-    height: 100vh; /* scroll room for the morph */
+    /* tall enough that the page content stays below the fold through the
+       hold + morph, so it never overlaps the big centred O&K */
+    height: 190vh;
   }
 
   /* step rhythm: uniform 6vh between the steps */
