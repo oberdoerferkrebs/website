@@ -128,6 +128,10 @@ const heroPool = projects
       mark.style.fontSize = big + (SMALL - big) * settle + 'px';
       fills.forEach((f, i) => (f.style.width = wipe * fillW[i] + 'px'));
 
+      // photo fill: centred on the big logo (as before), easing up to the
+      // saturated band only as it shrinks into the small wordmark
+      mark.style.backgroundPosition = `center ${50 - 20 * settle}%`;
+
       const centerY =
         q > 0
           ? dockCenterY + (headerCenterY - dockCenterY) * settle
