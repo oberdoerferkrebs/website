@@ -28,6 +28,27 @@
   padding: 0;
 }
 
+/* Photo-filled text: the big hero "O&K" and the header "Oberdoerfer&Krebs"
+   are both clipped over the SAME viewport-fixed picture, so the image is one
+   continuous backdrop that never moves or resizes as the text reforms. Global
+   so it reaches both the home hero and the header component. Until an image is
+   chosen (.has-photo on <html>), text stays solid so it is never invisible. */
+.photo-text {
+  font-family: var(--font-display);
+}
+
+html.has-photo .photo-text {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  background-image: var(--hero-img);
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  background-attachment: fixed;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
 html {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;

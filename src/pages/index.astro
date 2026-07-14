@@ -1,8 +1,14 @@
 ---
 // Home: three vertical steps on a uniform 6vh rhythm —
-// 1. 100vh hero with the O&K monogram (photo-filled SVG text),
+// 1. 100vh hero with the big photo-filled "O&K",
 // 2. narrow justified intro column,
 // 3. the project strip.
+//
+// The hero mark and the header wordmark are both text clipped over the SAME
+// viewport-fixed picture (background-clip: text + background-attachment:
+// fixed). Because the picture is one fixed backdrop, it never moves or
+// resizes — as you scroll, the letters reform from "O&K" into
+// "Oberdoerfer&Krebs" over an unchanging image.
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import ProjectStrip from '../components/ProjectStrip.astro';
@@ -22,37 +28,8 @@ const heroPool = projects
 
   <main>
     <!-- step 1: hero -->
-    <section class="hero">
-      <svg
-        class="monogram"
-        viewBox="0 0 980 300"
-        role="img"
-        aria-label="O&K — Oberdoerfer&Krebs."
-        data-pool={JSON.stringify(heroPool)}
-      >
-        <defs>
-          <clipPath id="monogram-clip" clipPathUnits="userSpaceOnUse">
-            <text
-              x="490"
-              y="290"
-              text-anchor="middle"
-              textLength="960"
-              lengthAdjust="spacingAndGlyphs">O&amp;K</text
-            >
-          </clipPath>
-        </defs>
-        <g clip-path="url(#monogram-clip)">
-          <rect class="monogram-fallback" x="0" y="0" width="980" height="300"></rect>
-          <image
-            class="monogram-photo"
-            href=""
-            x="0"
-            y="0"
-            width="980"
-            height="300"
-            preserveAspectRatio="xMidYMid slice"></image>
-        </g>
-      </svg>
+    <section class="hero" data-pool={JSON.stringify(heroPool)}>
+      <div class="photo-text mark-big" aria-hidden="true">O&amp;K</div>
     </section>
 
     <!-- step 2: intro (stand-in copy — final text comes later) -->
@@ -80,58 +57,49 @@ const heroPool = projects
 
 <script>
   // Hero fill: pick a random project thumbDetail per page view, never the
-  // same as the previous view (tracked in sessionStorage). With an empty
-  // pool the grey fallback rect stays visible.
-  const svg = document.querySelector<SVGSVGElement>('.monogram');
-  const photo = document.querySelector<SVGImageElement>('.monogram-photo');
-  if (svg && photo) {
-    const pool: { name: string; src: string }[] = JSON.parse(
-      svg.dataset.pool || '[]'
-    );
-    if (pool.length > 0) {
-      const prev = sessionStorage.getItem('ok-hero-prev');
-      let candidates = pool.filter((p) => p.src !== prev);
-      if (candidates.length === 0) candidates = pool;
-      const pick = candidates[Math.floor(Math.random() * candidates.length)];
-      sessionStorage.setItem('ok-hero-prev', pick.src);
-      photo.setAttribute('href', pick.src);
-      svg.setAttribute(
-        'aria-label',
-        `O&K — Oberdoerfer&Krebs. ${pick.name} photograph.`
-      );
-    }
+  // same as the previous view (sessionStorage). The chosen image becomes the
+  // shared, viewport-fixed backdrop for BOTH the big mark and the header
+  // wordmark, via the --hero-img custom property + the .has-photo class.
+  const hero = document.querySelector<HTMLElement>('.hero');
+  const pool: { name: string; src: string }[] = JSON.parse(
+    hero?.dataset.pool || '[]'
+  );
+  if (pool.length > 0) {
+    const prev = sessionStorage.getItem('ok-hero-prev');
+    let candidates = pool.filter((p) => p.src !== prev);
+    if (candidates.length === 0) candidates = pool;
+    const pick = candidates[Math.floor(Math.random() * candidates.length)];
+    sessionStorage.setItem('ok-hero-prev', pick.src);
+    document.documentElement.style.setProperty('--hero-img', `url("${pick.src}")`);
+    document.documentElement.classList.add('has-photo');
+
+    const h1 = document.querySelector('h1.sr-only');
+    if (h1) h1.textContent = `Oberdoerfer&Krebs — ${pick.name}`;
   }
 </script>
 
 <script>
-  // Scroll transition: as you scroll the first ~80vh, the big O&K monogram
-  // shrinks and rises up into the header, fading out as the centred
-  // "Oberdoerfer&Krebs" wordmark fades in. Only runs when motion is allowed;
-  // otherwise the page scrolls normally and the wordmark is always visible.
+  // Scroll transition: over the first ~85vh, the big "O&K" fades out while the
+  // centred "Oberdoerfer&Krebs" wordmark fades in. Both are windows onto the
+  // same fixed picture, so the image stays put and the same size — the text
+  // simply reforms from the monogram into the full wordmark. No scaling of the
+  // mark (which would shrink the picture); the big mark just scrolls up under
+  // the header as normal. Only runs when motion is allowed.
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const mark = document.querySelector<SVGSVGElement>('.monogram');
+  const big = document.querySelector<HTMLElement>('.mark-big');
   const wordmark = document.querySelector<HTMLElement>('.header-wordmark');
 
-  if (mark && wordmark && !reduce) {
-    document.documentElement.classList.add('hero-anim');
-
+  if (big && wordmark && !reduce) {
     let ticking = false;
+    const lerp = (a: number, b: number, t: number) =>
+      Math.min(1, Math.max(0, (t - a) / (b - a)));
+
     const update = () => {
       ticking = false;
-      const vh = window.innerHeight;
-      const distance = vh * 0.8; // transition completes over ~80vh of scroll
-      const p = Math.min(1, Math.max(0, window.scrollY / distance));
-
-      // monogram: scale down, rise toward the header line, fade out near the end
-      const scale = 1 - 0.85 * p;
-      const rise = (vh / 2 - 30) * p; // travel from viewport centre up to the nav
-      const opacity = p < 0.7 ? 1 : Math.max(0, 1 - (p - 0.7) / 0.3);
-      mark.style.transform = `translate(-50%, calc(-50% - ${rise}px)) scale(${scale})`;
-      mark.style.opacity = String(opacity);
-      mark.style.pointerEvents = p > 0.99 ? 'none' : '';
-
-      // centred header wordmark: fades in as the monogram lands
-      wordmark.style.opacity = String(Math.max(0, (p - 0.55) / 0.45));
+      const p = Math.min(1, Math.max(0, window.scrollY / (window.innerHeight * 0.85)));
+      // overlapping crossfade so both show the same picture mid-transition
+      big.style.opacity = String(1 - lerp(0.15, 0.7, p));
+      wordmark.style.opacity = String(lerp(0.35, 0.9, p));
     };
 
     const onScroll = () => {
@@ -156,34 +124,14 @@ const heroPool = projects
     padding: 0 1.5rem;
   }
 
-  .monogram {
-    width: min(100%, 980px);
-    height: auto;
-  }
-
-  /* When the scroll transition is active (JS on, motion allowed), the
-     monogram is pinned to the viewport centre so it can shrink and rise up
-     into the header as you scroll. Default (no JS / reduced motion) leaves
-     it in normal flow, scrolling away like any hero. */
-  :global(html.hero-anim) .monogram {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    width: min(90%, 980px);
-    transform: translate(-50%, -50%);
-    transform-origin: center center;
-    z-index: 1; /* below the header, so it slides under the nav as it rises */
-    will-change: transform, opacity;
-  }
-
-  .monogram text {
-    font-family: var(--font-display);
-    font-weight: 900;
-    font-size: 370px;
-  }
-
-  .monogram-fallback {
-    fill: var(--color-placeholder);
+  .mark-big {
+    font-weight: 700;
+    font-size: min(23vw, 15rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    text-align: center;
+    color: var(--color-placeholder); /* solid fallback before a photo loads */
+    z-index: 1;
   }
 
   /* step rhythm: uniform 6vh between the three steps */
