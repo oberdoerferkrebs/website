@@ -87,6 +87,9 @@ const heroPool = projects
 
     const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
     let vw = 0, vh = 0, headerCenterY = 0, ticking = false;
+    let fillW: number[] = []; // each fill's natural width at the FINAL size
+
+    const SMALL = 1.2 * 16; // final size = 1.2rem, matching the header wordmark
 
     const measure = () => {
       vw = window.innerWidth;
@@ -94,27 +97,33 @@ const heroPool = projects
       const nav = document.querySelector('.nav-left');
       const r = nav?.getBoundingClientRect();
       headerCenterY = r ? r.top + r.height / 2 : 30;
+      // natural width of each fill at the final size (for the wipe reveal)
+      const prev = mark.style.fontSize;
+      mark.style.fontSize = SMALL + 'px';
+      fills.forEach((f) => (f.style.width = 'auto'));
+      fillW = fills.map((f) => f.getBoundingClientRect().width);
+      fills.forEach((f) => (f.style.width = '0px'));
+      mark.style.fontSize = prev;
     };
-
-    const SMALL = 1.2 * 16; // final size = 1.2rem, matching the header wordmark
 
     const update = () => {
       ticking = false;
       const big = Math.min(vw * 0.34, 340); // full O&K size
       const y = window.scrollY;
 
-      // Phase 1: the big O&K just moves up 1:1 with scroll until it docks near
-      // the top. Phase 2 (a quick snap): it shrinks, the fills unfurl, and it
-      // settles into the header line.
-      const dockCenterY = vh * 0.26; // where the full-size mark parks near the top
-      const morphStart = vh / 2 - dockCenterY; // scroll at which it docks
-      const morphDist = vh * 0.26; // quick morph
+      // Phase 1: the big O&K moves up 1:1 with scroll until it docks near the
+      // top. Phase 2 is a two-step snap: first the "O&K" SHRINKS to the final
+      // size, THEN the full name WIPES OUT — the extra letters revealed at
+      // their final size (not scaled up), pushing the anchors apart.
+      const dockCenterY = vh * 0.26;
+      const morphStart = vh / 2 - dockCenterY;
+      const morphDist = vh * 0.26;
       const q = clamp01((y - morphStart) / morphDist);
 
-      // size + fills only change during the snap
-      mark.style.fontSize = big + (SMALL - big) * q + 'px';
-      const fillP = clamp01((q - 0.05) / 0.9);
-      fills.forEach((f) => (f.style.fontSize = fillP + 'em'));
+      const shrink = clamp01(q / 0.55); // finish shrinking by q = 0.55
+      const reveal = clamp01((q - 0.5) / 0.5); // then wipe the fills open
+      mark.style.fontSize = big + (SMALL - big) * shrink + 'px';
+      fills.forEach((f, i) => (f.style.width = reveal * fillW[i] + 'px'));
 
       // vertical: travel up 1:1, then settle from the dock into the header
       const centerY =
@@ -167,14 +176,24 @@ const heroPool = projects
   }
 
   .morph-mark .fill {
-    /* becomes 0 during the morph; full size otherwise */
-    display: inline;
+    display: inline; /* full size in the static fallback */
   }
 
   /* while animating, JS owns left/top/font-size */
   :global(html.hero-anim) .morph-mark {
     right: auto;
     text-align: left;
+  }
+
+  /* during the animation the fills are width-clipped windows that JS wipes
+     open, so the letters are revealed at their final size (never scaled).
+     No descenders in the name, so bottom-align matches the anchors' baseline. */
+  :global(html.hero-anim) .morph-mark .fill {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    vertical-align: bottom;
+    width: 0;
   }
 
   .hero-spacer {
