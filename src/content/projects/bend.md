@@ -7,6 +7,7 @@ dimensions: "~500 × 500 × 750 mm"
 exhibition: "Ukurant, 3daysofdesign 2026"
 thumbDetail: "/projects/bend/detail.jpg"
 thumbFull: "/projects/bend/full.jpg"
+fillImage: "/projects/bend/fill.jpg"
 focalX: 40
 focalY: 65
 images:

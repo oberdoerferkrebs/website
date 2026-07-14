@@ -7,6 +7,7 @@ dimensions: ""
 exhibition: "Biennalen for Kunsthåndværk & Design, Glasmuseet Ebeltoft"
 thumbDetail: "/projects/human-layers/detail.jpg"
 thumbFull: "/projects/human-layers/full.jpg"
+fillImage: "/projects/human-layers/fill.jpg"
 focalX: 50
 focalY: 42
 images:

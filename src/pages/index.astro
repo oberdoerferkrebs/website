@@ -14,10 +14,11 @@ const projects = (await getCollection('projects')).sort(
   (a, b) => b.data.year - a.data.year
 );
 
-// pool for the photo fill: every project's thumbDetail that actually exists
+// pool for the photo fill: prefer the edge-to-edge fillImage, fall back to
+// thumbDetail. Only projects that have one are included.
 const heroPool = projects
-  .filter((p) => p.data.thumbDetail)
-  .map((p) => ({ name: p.data.title, src: p.data.thumbDetail }));
+  .map((p) => ({ name: p.data.title, src: p.data.fillImage ?? p.data.thumbDetail }))
+  .filter((p): p is { name: string; src: string } => Boolean(p.src));
 ---
 
 <Base heroMode={true}>
