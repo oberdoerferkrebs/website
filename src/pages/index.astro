@@ -1,16 +1,11 @@
 ---
-// Home: three vertical steps on a uniform 6vh rhythm —
-// 1. 100vh hero with the O&K monogram (photo-filled SVG text),
-// 2. narrow justified intro column,
-// 3. the project strip.
-//
-// The monogram is an SVG: the text "O&K" (weight 900, textLength-locked to
-// full width) is a clipPath window onto a photograph. On scroll, the letter
-// shapes shrink and rise up into the header while the photograph translates
-// along with them WITHOUT scaling — the picture stays at constant size and
-// simply follows the movement; only the letter windows change. At the top,
-// the mark cross-fades into the header wordmark, which is itself clipped
-// over the same picture.
+// Home. The wordmark literally morphs: it is ONE element that starts as a
+// huge, centred "O&K" and becomes the small "Oberdoerfer&Krebs" in the
+// header. The letters O, &, K are permanent anchors; "berdoerfer" and "rebs"
+// grow out from font-size 0, pushing the anchors apart, while the whole mark
+// shrinks and travels up to the header line. Nothing cross-fades — the same
+// glyphs are present throughout, so the monogram literally turns into the
+// header wordmark.
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import ProjectStrip from '../components/ProjectStrip.astro';
@@ -19,7 +14,7 @@ const projects = (await getCollection('projects')).sort(
   (a, b) => b.data.year - a.data.year
 );
 
-// pool for the hero fill: every project's thumbDetail that actually exists
+// pool for the photo fill: every project's thumbDetail that actually exists
 const heroPool = projects
   .filter((p) => p.data.thumbDetail)
   .map((p) => ({ name: p.data.title, src: p.data.thumbDetail }));
@@ -28,45 +23,21 @@ const heroPool = projects
 <Base heroMode={true}>
   <h1 class="sr-only">Oberdoerfer&amp;Krebs</h1>
 
-  <main>
-    <!-- step 1: hero -->
-    <section class="hero">
-      <svg
-        class="monogram"
-        viewBox="0 0 980 300"
-        role="img"
-        aria-label="O&K — Oberdoerfer&Krebs."
-        data-pool={JSON.stringify(heroPool)}
-      >
-        <defs>
-          <clipPath id="monogram-clip" clipPathUnits="userSpaceOnUse">
-            <text
-              class="clip-text"
-              x="490"
-              y="290"
-              text-anchor="middle"
-              textLength="960"
-              lengthAdjust="spacingAndGlyphs">O&amp;K</text
-            >
-          </clipPath>
-        </defs>
-        <g clip-path="url(#monogram-clip)">
-          <!-- oversized fallback so the grey never runs out while travelling -->
-          <rect class="monogram-fallback" x="-200" y="-2200" width="1380" height="4700"
-          ></rect>
-          <image
-            class="monogram-photo"
-            href=""
-            x="0"
-            y="0"
-            width="980"
-            height="300"
-            preserveAspectRatio="xMidYMid slice"></image>
-        </g>
-      </svg>
-    </section>
+  <!-- the morphing wordmark (its own fixed element, sits above the header) -->
+  <a
+    class="morph-mark photo-text"
+    href="/"
+    aria-label="Oberdoerfer & Krebs — home"
+    data-pool={JSON.stringify(heroPool)}
+  ><span class="anchor">O</span><span class="fill">berdoerfer</span><span
+      class="anchor">&amp;</span><span class="anchor">K</span><span class="fill"
+      >rebs</span></a>
 
-    <!-- step 2: intro (stand-in copy — final text comes later) -->
+  <!-- scroll room so the morph has somewhere to happen -->
+  <div class="hero-spacer" aria-hidden="true"></div>
+
+  <main>
+    <!-- intro (stand-in copy — final text comes later) -->
     <section class="intro">
       <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer at
@@ -84,80 +55,64 @@ const heroPool = projects
       </p>
     </section>
 
-    <!-- step 3: project strip -->
+    <!-- project strip -->
     <ProjectStrip projects={projects} />
   </main>
 </Base>
 
 <script>
-  // Hero fill: pick a random project thumbDetail per page view, never the
-  // same as the previous view (sessionStorage). The pick fills BOTH the
-  // monogram's SVG image and (via --hero-img) the header wordmark.
-  const svg = document.querySelector<SVGSVGElement>('.monogram');
-  const photo = document.querySelector<SVGImageElement>('.monogram-photo');
-  if (svg && photo) {
-    const pool: { name: string; src: string }[] = JSON.parse(
-      svg.dataset.pool || '[]'
-    );
-    if (pool.length > 0) {
-      const prev = sessionStorage.getItem('ok-hero-prev');
-      let candidates = pool.filter((p) => p.src !== prev);
-      if (candidates.length === 0) candidates = pool;
-      const pick = candidates[Math.floor(Math.random() * candidates.length)];
-      sessionStorage.setItem('ok-hero-prev', pick.src);
-      photo.setAttribute('href', pick.src);
-      svg.setAttribute(
-        'aria-label',
-        `O&K — Oberdoerfer&Krebs. ${pick.name} photograph.`
-      );
-      document.documentElement.style.setProperty('--hero-img', `url("${pick.src}")`);
-      document.documentElement.classList.add('has-photo');
-    }
+  // 1) Pick the photo that fills the wordmark (random per view, never a repeat).
+  const mark = document.querySelector<HTMLAnchorElement>('.morph-mark');
+  const pool: { name: string; src: string }[] = JSON.parse(
+    mark?.dataset.pool || '[]'
+  );
+  if (mark && pool.length > 0) {
+    const prev = sessionStorage.getItem('ok-hero-prev');
+    let candidates = pool.filter((p) => p.src !== prev);
+    if (candidates.length === 0) candidates = pool;
+    const pick = candidates[Math.floor(Math.random() * candidates.length)];
+    sessionStorage.setItem('ok-hero-prev', pick.src);
+    document.documentElement.style.setProperty('--hero-img', `url("${pick.src}")`);
+    document.documentElement.classList.add('has-photo');
+    mark.setAttribute('aria-label', `Oberdoerfer & Krebs — ${pick.name} — home`);
   }
-</script>
 
-<script>
-  // Scroll morph: over the first ~85vh of scroll the O&K letter shapes
-  // shrink and rise from the viewport centre up to the header line. The
-  // photograph inside is translated by exactly the same amount — but never
-  // scaled — so the picture keeps its size and follows the letters; only
-  // the letter windows shrink. At the top the mark cross-fades into the
-  // (photo-filled) header wordmark. Skipped under prefers-reduced-motion.
+  // 2) The morph itself.
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const mark = document.querySelector<SVGSVGElement>('.monogram');
-  const clipText = document.querySelector<SVGTextElement>('.clip-text');
-  const photoEl = document.querySelector<SVGImageElement>('.monogram-photo');
-  const wordmark = document.querySelector<HTMLElement>('.header-wordmark');
+  const fills = mark ? Array.from(mark.querySelectorAll<HTMLElement>('.fill')) : [];
 
-  if (mark && clipText && photoEl && wordmark && !reduce) {
+  if (mark && !reduce) {
     document.documentElement.classList.add('hero-anim');
+    mark.style.opacity = '1';
 
     const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
-    let ticking = false;
+    let vw = 0, vh = 0, headerCenterY = 0, ticking = false;
+
+    const measure = () => {
+      vw = window.innerWidth;
+      vh = window.innerHeight;
+      const nav = document.querySelector('.nav-left');
+      const r = nav?.getBoundingClientRect();
+      headerCenterY = r ? r.top + r.height / 2 : 30;
+    };
+
+    const SMALL = 1.2 * 16; // final size = 1.2rem, matching the header wordmark
 
     const update = () => {
       ticking = false;
-      const vh = window.innerHeight;
-      // px -> SVG user units (viewBox is 980 wide)
-      const k = mark.getBoundingClientRect().width / 980;
+      const big = Math.min(vw * 0.34, 340); // starting O&K size
       const p = clamp01(window.scrollY / (vh * 0.85));
 
-      // travel: from viewport centre up to the header centreline (~34px)
-      const riseSvg = ((vh / 2 - 34) * p) / k;
-      // letter windows shrink toward header-text size
-      const s = 1 - 0.88 * p;
+      // overall shrink, and the fills growing out of the anchors
+      mark.style.fontSize = big + (SMALL - big) * p + 'px';
+      const fillP = clamp01((p - 0.08) / 0.82);
+      fills.forEach((f) => (f.style.fontSize = fillP + 'em'));
 
-      // text: rise + scale about its visual centre (490, 157)
-      clipText.setAttribute(
-        'transform',
-        `translate(0 ${-riseSvg}) translate(490 157) scale(${s}) translate(-490 -157)`
-      );
-      // picture: SAME rise, NO scale — constant size, follows the letters
-      photoEl.setAttribute('transform', `translate(0 ${-riseSvg})`);
-
-      // cross-fade into the header wordmark near the top
-      mark.style.opacity = String(1 - clamp01((p - 0.55) / 0.35));
-      wordmark.style.opacity = String(clamp01((p - 0.35) / 0.55));
+      // re-centre after the layout settles; travel from screen centre to header
+      const rect = mark.getBoundingClientRect();
+      const centerY = vh / 2 + (headerCenterY - vh / 2) * p;
+      mark.style.left = (vw - rect.width) / 2 + 'px';
+      mark.style.top = centerY - rect.height / 2 + 'px';
     };
 
     const onScroll = () => {
@@ -166,54 +121,58 @@ const heroPool = projects
         requestAnimationFrame(update);
       }
     };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', update);
+    measure();
     update();
-  } else if (wordmark) {
-    wordmark.style.opacity = '1'; // reduced motion: keep the wordmark visible
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', () => {
+      measure();
+      update();
+    });
+  } else if (mark) {
+    mark.style.opacity = '1'; // reduced motion: static full wordmark at the top
   }
 </script>
 
 <style>
-  .hero {
-    height: 100vh;
-    display: grid;
-    place-items: center;
-    padding: 0 1.5rem;
-  }
-
-  .monogram {
-    width: min(90%, 980px);
-    height: auto;
-    overflow: visible;
-    pointer-events: none;
-  }
-
-  /* While the morph is active the monogram is pinned to the viewport centre
-     and travels/shrinks via its internal SVG transforms. z-index above the
-     header background so the mark visibly lands ON the header; clicks pass
-     through (pointer-events: none). Default (no JS / reduced motion) leaves
-     it in normal flow, scrolling away like any hero. */
-  :global(html.hero-anim) .monogram {
+  /* The morphing wordmark. Default (no JS / reduced motion) is the small full
+     wordmark centred at the top — a clean static fallback. */
+  .morph-mark {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 1.1rem;
+    left: 0;
+    right: 0;
     z-index: 101;
-    will-change: opacity;
-  }
-
-  .monogram .clip-text {
+    text-align: center;
+    white-space: nowrap;
     font-family: var(--font-display);
     font-weight: 900;
-    font-size: 370px;
+    font-size: 1.2rem;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    text-decoration: none;
+    color: var(--color-fg);
+    opacity: 0; /* revealed by JS (or the noscript fallback) to avoid a flash */
   }
 
-  .monogram-fallback {
-    fill: var(--color-placeholder);
+  .morph-mark .fill {
+    /* becomes 0 during the morph; full size otherwise */
+    display: inline;
   }
 
-  /* step rhythm: uniform 6vh between the three steps */
+  /* while animating, JS owns left/top/font-size */
+  :global(html.hero-anim) .morph-mark {
+    right: auto;
+    text-align: left;
+  }
+
+  .hero-spacer {
+    height: 6rem; /* clears the fixed header in the static fallback */
+  }
+  :global(html.hero-anim) .hero-spacer {
+    height: 100vh; /* scroll room for the morph */
+  }
+
+  /* step rhythm: uniform 6vh between the steps */
   .intro {
     width: 320px;
     max-width: calc(100% - 3rem);
