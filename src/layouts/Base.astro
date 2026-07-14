@@ -5,9 +5,10 @@ import Header from '../components/Header.astro';
 interface Props {
   title?: string;
   description?: string;
+  heroMode?: boolean;
 }
 
-const { title = 'Oberdoerfer&Krebs', description = 'Oberdoerfer&Krebs is a design studio working with large-scale 3D printing, interrupted and finished by hand.' } = Astro.props;
+const { title = 'Oberdoerfer&Krebs', description = 'Oberdoerfer&Krebs is a design studio working with large-scale 3D printing, interrupted and finished by hand.', heroMode = false } = Astro.props;
 ---
 
 <!doctype html>
@@ -18,9 +19,13 @@ const { title = 'Oberdoerfer&Krebs', description = 'Oberdoerfer&Krebs is a desig
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <!-- if JS is off, make sure the centered wordmark is always visible -->
+    <noscript>
+      <style>.site-header.hero-mode .header-wordmark { opacity: 1; }</style>
+    </noscript>
   </head>
   <body>
-    <Header />
+    <Header heroMode={heroMode} />
     <slot />
   </body>
 </html>

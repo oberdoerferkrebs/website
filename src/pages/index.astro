@@ -17,7 +17,7 @@ const heroPool = projects
   .map((p) => ({ name: p.data.title, src: p.data.thumbDetail }));
 ---
 
-<Base>
+<Base heroMode={true}>
   <h1 class="sr-only">Oberdoerfer&amp;Krebs</h1>
 
   <main>
@@ -103,6 +103,51 @@ const heroPool = projects
   }
 </script>
 
+<script>
+  // Scroll transition: as you scroll the first ~80vh, the big O&K monogram
+  // shrinks and rises up into the header, fading out as the centred
+  // "Oberdoerfer&Krebs" wordmark fades in. Only runs when motion is allowed;
+  // otherwise the page scrolls normally and the wordmark is always visible.
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const mark = document.querySelector<SVGSVGElement>('.monogram');
+  const wordmark = document.querySelector<HTMLElement>('.header-wordmark');
+
+  if (mark && wordmark && !reduce) {
+    document.documentElement.classList.add('hero-anim');
+
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const vh = window.innerHeight;
+      const distance = vh * 0.8; // transition completes over ~80vh of scroll
+      const p = Math.min(1, Math.max(0, window.scrollY / distance));
+
+      // monogram: scale down, rise toward the header line, fade out near the end
+      const scale = 1 - 0.85 * p;
+      const rise = (vh / 2 - 30) * p; // travel from viewport centre up to the nav
+      const opacity = p < 0.7 ? 1 : Math.max(0, 1 - (p - 0.7) / 0.3);
+      mark.style.transform = `translate(-50%, calc(-50% - ${rise}px)) scale(${scale})`;
+      mark.style.opacity = String(opacity);
+      mark.style.pointerEvents = p > 0.99 ? 'none' : '';
+
+      // centred header wordmark: fades in as the monogram lands
+      wordmark.style.opacity = String(Math.max(0, (p - 0.55) / 0.45));
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  } else if (wordmark) {
+    wordmark.style.opacity = '1'; // reduced motion: keep the wordmark visible
+  }
+</script>
+
 <style>
   .hero {
     height: 100vh;
@@ -114,6 +159,21 @@ const heroPool = projects
   .monogram {
     width: min(100%, 980px);
     height: auto;
+  }
+
+  /* When the scroll transition is active (JS on, motion allowed), the
+     monogram is pinned to the viewport centre so it can shrink and rise up
+     into the header as you scroll. Default (no JS / reduced motion) leaves
+     it in normal flow, scrolling away like any hero. */
+  :global(html.hero-anim) .monogram {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: min(90%, 980px);
+    transform: translate(-50%, -50%);
+    transform-origin: center center;
+    z-index: 1; /* below the header, so it slides under the nav as it rises */
+    will-change: transform, opacity;
   }
 
   .monogram text {

@@ -1,19 +1,35 @@
 ---
-// Fixed site navigation. The wordmark is always "Oberdoerfer&Krebs" —
-// no spaces around the ampersand, everywhere.
-const links = [
+// Fixed site navigation, symmetric: Work · Studio on the left, the
+// centered wordmark "Oberdoerfer&Krebs", and Press · Contact on the right.
+//
+// On the home page (heroMode), the centered wordmark starts hidden and is
+// revealed by the scroll transition as the big O&K monogram shrinks up into
+// it. Everywhere else the wordmark is simply always visible.
+interface Props {
+  heroMode?: boolean;
+}
+const { heroMode = false } = Astro.props;
+
+const left = [
   { href: '/work', label: 'Work' },
   { href: '/studio', label: 'Studio' },
+];
+const right = [
   { href: '/press', label: 'Press' },
   // { href: '/shop', label: 'Shop' }, // reserved — enable when the shop is built
   { href: '/contact', label: 'Contact' },
 ];
 ---
 
-<header class="site-header">
-  <a class="wordmark" href="/">Oberdoerfer&amp;Krebs</a>
-  <nav aria-label="Primary">
-    {links.map((l) => <a href={l.href}>{l.label}</a>)}
+<header class:list={['site-header', { 'hero-mode': heroMode }]}>
+  <nav class="nav nav-left" aria-label="Primary">
+    {left.map((l) => <a href={l.href}>{l.label}</a>)}
+  </nav>
+
+  <a class="header-wordmark" href="/">Oberdoerfer&amp;Krebs</a>
+
+  <nav class="nav nav-right" aria-label="Secondary">
+    {right.map((l) => <a href={l.href}>{l.label}</a>)}
   </nav>
 </header>
 
@@ -24,41 +40,73 @@ const links = [
     left: 0;
     right: 0;
     z-index: 100;
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
     gap: 1rem;
     padding: 1.1rem 1.5rem;
     background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(6px);
   }
 
-  .wordmark {
-    font-family: var(--font-display);
-    font-size: 0.95rem;
-    letter-spacing: 0.01em;
-    text-decoration: none;
-  }
-
-  nav {
+  .nav {
     display: flex;
     gap: 1.4rem;
   }
-
-  nav a {
+  .nav-left {
+    justify-self: start;
+  }
+  .nav-right {
+    justify-self: end;
+  }
+  .nav a {
     font-size: 0.9rem;
     color: var(--color-fg);
     text-decoration: none;
   }
-
-  nav a:hover {
+  .nav a:hover {
     color: var(--color-muted);
   }
 
+  .header-wordmark {
+    justify-self: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  /* home page: hidden until the scroll transition reveals it (server-rendered
+     so there is no flash). JS drives the opacity from there. */
+  .site-header.hero-mode .header-wordmark {
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-header.hero-mode .header-wordmark {
+      opacity: 1;
+    }
+  }
+
+  /* mobile: wordmark centered on its own row, nav groups centered below */
   @media (max-width: 40rem) {
     .site-header {
-      padding: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      row-gap: 0.5rem;
+      column-gap: 1.5rem;
+      padding: 0.9rem 1rem;
     }
-    nav {
+    .header-wordmark {
+      flex-basis: 100%;
+      text-align: center;
+      order: -1;
+      font-size: 0.9rem;
+    }
+    .nav {
       gap: 1rem;
     }
   }
