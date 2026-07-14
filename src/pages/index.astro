@@ -181,9 +181,9 @@ const heroPool = projects
     height: 6rem; /* clears the fixed header in the static fallback */
   }
   :global(html.hero-anim) .hero-spacer {
-    /* tall enough that the page content stays below the fold through the
-       travel + morph, so it never overlaps the big O&K */
-    height: 150vh;
+    /* one screen of hero, like the original — content sits just below the
+       fold and follows on the same 6vh rhythm as the rest of the page */
+    height: 100vh;
   }
 
   /* step rhythm: uniform 6vh between the steps */
