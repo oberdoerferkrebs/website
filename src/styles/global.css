@@ -1,11 +1,17 @@
 /* Oberdoerfer&Krebs — global styles.
-   The typeface is a stand-in (Archivo / Archivo Black) and will be swapped
-   later: all font-family definitions live in the two custom properties
-   below, so the swap is one edit. */
+   Typeface: a free Helvetica-based system stack, standing in for Neue Haas
+   Grotesk (which needs a paid web licence). On Apple devices this renders
+   Helvetica Neue / Helvetica; on Windows, Arial — all near-identical to NHG.
+
+   TO SWAP IN LICENSED NEUE HAAS GROTESK LATER (one edit):
+   1. Drop the licensed .woff2 files in /public/fonts/.
+   2. Add @font-face blocks for them here.
+   3. Prepend the family name to the two custom properties below, e.g.
+      --font-display: 'Neue Haas Grotesk Display', 'Helvetica Neue', ... */
 
 :root {
-  --font-display: 'Archivo Black', 'Archivo', 'Helvetica Neue', Arial, sans-serif;
-  --font-body: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-body: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 
   --color-bg: #ffffff;
   --color-fg: #111111;
