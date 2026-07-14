@@ -10,26 +10,22 @@ interface Props {
 }
 const { heroMode = false } = Astro.props;
 
-const left = [
-  { href: '/work', label: 'Work' },
-  { href: '/studio', label: 'Studio' },
-];
-const right = [
-  { href: '/press', label: 'Press' },
-  // { href: '/shop', label: 'Shop' }, // reserved — enable when the shop is built
-  { href: '/contact', label: 'Contact' },
-];
+// Section labels. These are placeholders — the sections don't exist yet, so
+// they render as plain (non-linking) labels, not links. Add `href` back when
+// a section is actually built.
+const left = ['Work', 'Studio'];
+const right = ['Press', 'Contact']; // 'Shop' reserved — add when the shop is built
 ---
 
 <header class:list={['site-header', { 'hero-mode': heroMode }]}>
   <nav class="nav nav-left" aria-label="Primary">
-    {left.map((l) => <a href={l.href}>{l.label}</a>)}
+    {left.map((label) => <span class="nav-label">{label}</span>)}
   </nav>
 
   <a class="header-wordmark" href="/">Oberdoerfer&amp;Krebs</a>
 
   <nav class="nav nav-right" aria-label="Secondary">
-    {right.map((l) => <a href={l.href}>{l.label}</a>)}
+    {right.map((label) => <span class="nav-label">{label}</span>)}
   </nav>
 </header>
 
@@ -66,13 +62,9 @@ const right = [
     grid-column: 3;
     justify-self: end;
   }
-  .nav a {
+  .nav-label {
     font-size: 0.9rem;
     color: var(--color-fg);
-    text-decoration: none;
-  }
-  .nav a:hover {
-    color: var(--color-muted);
   }
 
   .header-wordmark {

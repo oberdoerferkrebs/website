@@ -14,11 +14,10 @@ const projects = (await getCollection('projects')).sort(
   (a, b) => b.data.year - a.data.year
 );
 
-// pool for the photo fill: prefer the edge-to-edge fillImage, fall back to
-// thumbDetail. Only projects that have one are included.
+// pool for the photo fill: every project's thumbDetail that actually exists
 const heroPool = projects
-  .map((p) => ({ name: p.data.title, src: p.data.fillImage ?? p.data.thumbDetail }))
-  .filter((p): p is { name: string; src: string } => Boolean(p.src));
+  .filter((p) => p.data.thumbDetail)
+  .map((p) => ({ name: p.data.title, src: p.data.thumbDetail }));
 ---
 
 <Base heroMode={true}>
@@ -177,6 +176,10 @@ const heroPool = projects
     font-size: 1.2rem;
     line-height: 1;
     letter-spacing: -0.03em;
+    /* room for the letters' ink to overhang the text box (e.g. the K's
+       pointed arms), so background-clip:text paints them fully instead of
+       cutting them off at the box edge */
+    padding: 0 0.3em;
     text-decoration: none;
     color: var(--color-fg);
     opacity: 0; /* revealed by JS (or the noscript fallback) to avoid a flash */
