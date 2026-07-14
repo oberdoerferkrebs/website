@@ -30,7 +30,12 @@ const heroImage = d.images[0] ?? d.thumbFull;
 
       {
         heroImage ? (
-          <img class="hero-img" src={heroImage} alt={d.title} />
+          <img
+            class="hero-img"
+            src={heroImage}
+            alt={d.title}
+            style={`object-position: ${d.focalX}% ${d.focalY}%;`}
+          />
         ) : (
           <div class="hero-img placeholder" aria-hidden="true" />
         )
