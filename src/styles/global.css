@@ -45,7 +45,10 @@ html.has-photo .photo-text {
   /* locked to a saturated band of the picture so the small wordmark reads
      strongly (the centre of the crop is too pale) */
   background-position: center 30%;
-  background-size: 92vw auto;
+  /* zoomed out so more of the picture shows through the letters (was 92vw,
+     which magnified a small slice). Capped in px so the zoom stays constant
+     on desktop where the logo size is fixed. */
+  background-size: min(84vw, 840px) auto;
   -webkit-background-clip: text;
   background-clip: text;
   /* punch up the picture so it reads strongly inside the letters */
