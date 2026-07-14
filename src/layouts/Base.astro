@@ -19,9 +19,12 @@ const { title = 'Oberdoerfer&Krebs', description = 'Oberdoerfer&Krebs is a desig
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <!-- if JS is off, make sure the centered wordmark is always visible -->
+    <!-- if JS is off, make sure the wordmark is visible (static fallback) -->
     <noscript>
-      <style>.site-header.hero-mode .header-wordmark { opacity: 1; }</style>
+      <style>
+        .site-header.hero-mode .header-wordmark { display: revert; }
+        .morph-mark { opacity: 1 !important; }
+      </style>
     </noscript>
   </head>
   <body>

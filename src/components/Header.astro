@@ -26,7 +26,7 @@ const right = [
     {left.map((l) => <a href={l.href}>{l.label}</a>)}
   </nav>
 
-  <a class="header-wordmark photo-text" href="/">Oberdoerfer&amp;Krebs</a>
+  <a class="header-wordmark" href="/">Oberdoerfer&amp;Krebs</a>
 
   <nav class="nav nav-right" aria-label="Secondary">
     {right.map((l) => <a href={l.href}>{l.label}</a>)}
@@ -53,10 +53,17 @@ const right = [
     display: flex;
     gap: 1.4rem;
   }
+  /* pin each part to its column so hiding the centre wordmark on the home
+     page can't cause the nav to re-flow into the wrong columns */
   .nav-left {
+    grid-column: 1;
     justify-self: start;
   }
+  .header-wordmark {
+    grid-column: 2;
+  }
   .nav-right {
+    grid-column: 3;
     justify-self: end;
   }
   .nav a {
@@ -79,16 +86,10 @@ const right = [
     white-space: nowrap;
   }
 
-  /* home page: hidden until the scroll transition reveals it (server-rendered
-     so there is no flash). JS drives the opacity from there. */
+  /* home page: the morphing .morph-mark stands in for the wordmark, so the
+     header's own copy is hidden there. */
   .site-header.hero-mode .header-wordmark {
-    opacity: 0;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .site-header.hero-mode .header-wordmark {
-      opacity: 1;
-    }
+    display: none;
   }
 
   /* mobile: wordmark centered on its own row, nav groups centered below */
