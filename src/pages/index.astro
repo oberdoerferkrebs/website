@@ -100,20 +100,29 @@ const heroPool = projects
 
     const update = () => {
       ticking = false;
-      const big = Math.min(vw * 0.34, 340); // starting O&K size
-      // hold the big O&K for the first stretch, then morph quickly
-      const startAt = vh * 0.5;
-      const distance = vh * 0.4;
-      const p = clamp01((window.scrollY - startAt) / distance);
+      const big = Math.min(vw * 0.34, 340); // full O&K size
+      const y = window.scrollY;
 
-      // overall shrink, and the fills growing out of the anchors
-      mark.style.fontSize = big + (SMALL - big) * p + 'px';
-      const fillP = clamp01((p - 0.08) / 0.82);
+      // Phase 1: the big O&K just moves up 1:1 with scroll until it docks near
+      // the top. Phase 2 (a quick snap): it shrinks, the fills unfurl, and it
+      // settles into the header line.
+      const dockCenterY = vh * 0.26; // where the full-size mark parks near the top
+      const morphStart = vh / 2 - dockCenterY; // scroll at which it docks
+      const morphDist = vh * 0.26; // quick morph
+      const q = clamp01((y - morphStart) / morphDist);
+
+      // size + fills only change during the snap
+      mark.style.fontSize = big + (SMALL - big) * q + 'px';
+      const fillP = clamp01((q - 0.05) / 0.9);
       fills.forEach((f) => (f.style.fontSize = fillP + 'em'));
 
-      // re-centre after the layout settles; travel from screen centre to header
+      // vertical: travel up 1:1, then settle from the dock into the header
+      const centerY =
+        q > 0
+          ? dockCenterY + (headerCenterY - dockCenterY) * q
+          : Math.max(dockCenterY, vh / 2 - y);
+
       const rect = mark.getBoundingClientRect();
-      const centerY = vh / 2 + (headerCenterY - vh / 2) * p;
       mark.style.left = (vw - rect.width) / 2 + 'px';
       mark.style.top = centerY - rect.height / 2 + 'px';
     };
@@ -173,8 +182,8 @@ const heroPool = projects
   }
   :global(html.hero-anim) .hero-spacer {
     /* tall enough that the page content stays below the fold through the
-       hold + morph, so it never overlaps the big centred O&K */
-    height: 190vh;
+       travel + morph, so it never overlaps the big O&K */
+    height: 150vh;
   }
 
   /* step rhythm: uniform 6vh between the steps */
