@@ -117,18 +117,20 @@ const heroPool = projects
       // their final size (not scaled up), pushing the anchors apart.
       const dockCenterY = vh * 0.26;
       const morphStart = vh / 2 - dockCenterY;
-      const morphDist = vh * 0.26;
+      const morphDist = vh * 0.34;
       const q = clamp01((y - morphStart) / morphDist);
 
-      const shrink = clamp01(q / 0.55); // finish shrinking by q = 0.55
-      const reveal = clamp01((q - 0.5) / 0.5); // then wipe the fills open
-      mark.style.fontSize = big + (SMALL - big) * shrink + 'px';
-      fills.forEach((f, i) => (f.style.width = reveal * fillW[i] + 'px'));
+      // First SETTLE: shrink to final size AND move all the way into the
+      // header (finishes at q = 0.5). Only THEN WIPE the name open, in place,
+      // so the growth happens at the correct header position and size.
+      const settle = clamp01(q / 0.5);
+      const wipe = clamp01((q - 0.5) / 0.5);
+      mark.style.fontSize = big + (SMALL - big) * settle + 'px';
+      fills.forEach((f, i) => (f.style.width = wipe * fillW[i] + 'px'));
 
-      // vertical: travel up 1:1, then settle from the dock into the header
       const centerY =
         q > 0
-          ? dockCenterY + (headerCenterY - dockCenterY) * q
+          ? dockCenterY + (headerCenterY - dockCenterY) * settle
           : Math.max(dockCenterY, vh / 2 - y);
 
       const rect = mark.getBoundingClientRect();

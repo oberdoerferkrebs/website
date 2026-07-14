@@ -42,7 +42,9 @@ html.has-photo .photo-text {
   -webkit-text-fill-color: transparent;
   background-image: var(--hero-img);
   background-repeat: no-repeat;
-  background-position: center center;
+  /* locked to a saturated band of the picture so the small wordmark reads
+     strongly (the centre of the crop is too pale) */
+  background-position: center 30%;
   background-size: 92vw auto;
   -webkit-background-clip: text;
   background-clip: text;
