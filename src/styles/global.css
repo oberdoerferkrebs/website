@@ -46,9 +46,13 @@ html.has-photo .photo-text {
      strongly (the centre of the crop is too pale) */
   background-position: center 30%;
   /* zoomed out so more of the picture shows through the letters (was 92vw,
-     which magnified a small slice). Capped in px so the zoom stays constant
-     on desktop where the logo size is fixed. */
-  background-size: min(84vw, 840px) auto;
+     which magnified a small slice). Sized RELATIVE to the letters' own box
+     (104% of it) rather than a fixed pixel width: this keeps the same zoom
+     the fixed 840px gave, but guarantees the picture always covers the whole
+     mark — including the K's thin overhanging arm — regardless of how wide
+     the actual font renders it (a fixed px width could fall short of the box
+     on systems with a wider Helvetica, leaving the K's arm unfilled). */
+  background-size: 104% auto;
   -webkit-background-clip: text;
   background-clip: text;
   /* punch up the picture so it reads strongly inside the letters */
