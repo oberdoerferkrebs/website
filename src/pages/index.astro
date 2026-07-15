@@ -176,12 +176,14 @@ const heroPool = projects
     font-size: 1.2rem;
     line-height: 1;
     letter-spacing: -0.03em;
-    /* room for the letters' ink to overhang the text box (e.g. the K's
-       pointed arms), so background-clip:text paints them fully instead of
-       cutting them off at the box edge. Kept small so the padded box stays
-       NARROWER than the zoomed-out fill picture (background-size ≤ 840px) —
-       otherwise the picture can't reach the K's arm and it renders unfilled. */
-    padding: 0 0.12em;
+    /* room for the letters' ink to overhang the text box, so
+       background-clip:text paints them fully instead of cutting them off at
+       the box edge. The K's diagonal arms overhang most, and how far depends
+       on the font weight the visitor actually gets (a heavy Black Helvetica
+       overhangs much further than a fallback Bold), so this is generous.
+       Safe to be generous: the fill picture is sized as a % of this box
+       (see global.css), so a wider box can never leave the arm uncovered. */
+    padding: 0 0.4em;
     text-decoration: none;
     color: var(--color-fg);
     opacity: 0; /* revealed by JS (or the noscript fallback) to avoid a flash */
