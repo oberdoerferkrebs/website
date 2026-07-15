@@ -51,7 +51,11 @@ html.has-photo .photo-text {
      the fixed 840px gave, but guarantees the picture always covers the whole
      mark — including the K's thin overhanging arm — regardless of how wide
      the actual font renders it (a fixed px width could fall short of the box
-     on systems with a wider Helvetica, leaving the K's arm unfilled). */
+     on systems with a wider Helvetica, leaving the K's arm unfilled).
+     NOTE: during the home-page morph, JS pins this to the value it resolves
+     to at the BIG stage (in px), so the photo does NOT shrink with the text —
+     the small header wordmark is a tiny window onto the unshrunken picture.
+     If you change the 104%, update BG_SCALE in index.astro to match. */
   background-size: 104% auto;
   -webkit-background-clip: text;
   background-clip: text;

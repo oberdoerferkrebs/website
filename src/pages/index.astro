@@ -89,6 +89,13 @@ const heroPool = projects
     let vw = 0, vh = 0, headerCenterY = 0, ticking = false;
     let fillW: number[] = []; // each fill's natural width at the FINAL size
 
+    // The photo must NOT shrink with the text: it stays at the size it has
+    // behind the big O&K, and the small header wordmark is just a tiny
+    // window onto that same, unshrunken picture. The CSS background-size is
+    // relative to the element (104% of its box), so here we measure what
+    // that resolves to at the BIG stage and pin it in px for the whole morph.
+    const BG_SCALE = 1.04; // keep in sync with background-size in global.css
+
     const SMALL = 1.2 * 16; // final size = 1.2rem, matching the header wordmark
 
     const measure = () => {
@@ -103,6 +110,11 @@ const heroPool = projects
       fills.forEach((f) => (f.style.width = 'auto'));
       fillW = fills.map((f) => f.getBoundingClientRect().width);
       fills.forEach((f) => (f.style.width = '0px'));
+      // pin the photo to its big-stage size (see BG_SCALE note above)
+      const big = Math.min(vw * 0.34, 340);
+      mark.style.fontSize = big + 'px';
+      const bigW = mark.getBoundingClientRect().width;
+      mark.style.backgroundSize = bigW * BG_SCALE + 'px auto';
       mark.style.fontSize = prev;
     };
 
