@@ -89,6 +89,13 @@ const heroPool = projects
     let vw = 0, vh = 0, headerCenterY = 0, ticking = false;
     let fillW: number[] = []; // each fill's natural width at the FINAL size
 
+    // The photo must NOT shrink with the text: it stays at the size it has
+    // behind the big O&K, and the small header wordmark is just a tiny
+    // window onto that same, unshrunken picture. The CSS background-size is
+    // relative to the element (104% of its box), so here we measure what
+    // that resolves to at the BIG stage and pin it in px for the whole morph.
+    const BG_SCALE = 1.04; // keep in sync with background-size in global.css
+
     const SMALL = 1.2 * 16; // final size = 1.2rem, matching the header wordmark
 
     const measure = () => {
@@ -103,6 +110,11 @@ const heroPool = projects
       fills.forEach((f) => (f.style.width = 'auto'));
       fillW = fills.map((f) => f.getBoundingClientRect().width);
       fills.forEach((f) => (f.style.width = '0px'));
+      // pin the photo to its big-stage size (see BG_SCALE note above)
+      const big = Math.min(vw * 0.34, 340);
+      mark.style.fontSize = big + 'px';
+      const bigW = mark.getBoundingClientRect().width;
+      mark.style.backgroundSize = bigW * BG_SCALE + 'px auto';
       mark.style.fontSize = prev;
     };
 
@@ -176,12 +188,14 @@ const heroPool = projects
     font-size: 1.2rem;
     line-height: 1;
     letter-spacing: -0.03em;
-    /* room for the letters' ink to overhang the text box (e.g. the K's
-       pointed arms), so background-clip:text paints them fully instead of
-       cutting them off at the box edge. Kept small so the padded box stays
-       NARROWER than the zoomed-out fill picture (background-size ≤ 840px) —
-       otherwise the picture can't reach the K's arm and it renders unfilled. */
-    padding: 0 0.12em;
+    /* room for the letters' ink to overhang the text box, so
+       background-clip:text paints them fully instead of cutting them off at
+       the box edge. The K's diagonal arms overhang most, and how far depends
+       on the font weight the visitor actually gets (a heavy Black Helvetica
+       overhangs much further than a fallback Bold), so this is generous.
+       Safe to be generous: the fill picture is sized as a % of this box
+       (see global.css), so a wider box can never leave the arm uncovered. */
+    padding: 0 0.4em;
     text-decoration: none;
     color: var(--color-fg);
     opacity: 0; /* revealed by JS (or the noscript fallback) to avoid a flash */
